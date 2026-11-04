@@ -34,3 +34,12 @@ Installed-software scan, full inventory export, migration plan, selective Add to
 Unsigned portable builds, clear SmartScreen/UAC guidance, release notifications, Windows 10/11 smoke tests, and operator documentation.
 
 Each milestone should be a separate reviewable implementation slice. No code or release work begins solely because these documents are committed.
+
+## Central management extension (confirmed 2026-11-04)
+The seven Windows milestones remain the foundation. Add independently scoped server/integration slices:
+- **S1 Django admin/API foundation:** profiles, YAML drafts, validation, published revisions, hashed access-code verifiers, optional expiry/usage limits and revoke/reactivate/rotate.
+- **S2 Recipient retrieval:** single-download website entry point, password entry in Windows app, HTTPS retrieval of latest published signed package, immutable snapshot and offline local YAML support.
+- **S3 Sessions and notifications:** authenticated installation sessions, idempotent completion reporting, default deactivate-on-success policy, locally queued offline reports, admin history, optional n8n webhooks.
+- **S4 Admin polish:** improve beyond Django Admin only where actual usage shows friction.
+
+Security acceptance: VPS never initiates client execution; untrusted/modified script packages are rejected; server cannot silently mutate an active snapshot. Build S1/S2/S3 after standalone workflow foundation is testable.
