@@ -32,3 +32,15 @@ Make Windows 10/11 computer setup repeatable for personal PCs, spouse's PCs, two
 - Windows 10 compatibility baseline and supported winget bootstrap scenarios.
 - Definition of 'required' tasks in Simple Mode.
 - Network recovery and full offline media are out of MVP scope.
+
+## Confirmed centralized distribution and administration decisions (2026-11-04)
+- Two independently usable components: local Windows WPF installer and small Django administration/API service on the VPS. Local YAML remains supported.
+- Recipient uses one website entry point (e.g. `millsdaniel.com/computersetup`) to download the installer, then enters a setup access password in the app. No second download or separate configuration handling.
+- Password entry fetches the latest **published** configuration at run time, even when the executable was downloaded days earlier. Draft edits do not affect recipients.
+- A setup access password maps to a profile, can be user-chosen or randomly generated, and is managed via authenticated admin UI. Multiple credentials can map to one profile.
+- New access codes default to **deactivate after verified successful installation**. Other policies: indefinite until manual revocation; deactivate on first retrieval. Optional expiration and usage limits; reactivation/rotation supported.
+- Failed or interrupted installations do not deactivate access codes. Successful installation is recorded locally even without connectivity; server deactivates only after authenticated completion event arrives.
+- The recipient sees minimal technical warnings in Simple Mode; integrity/compatibility checks are automatic. OS UAC remains intact.
+- VPS may manage YAML drafts, validation, versioning, publishing, credentials, history, and n8n event notifications. It cannot initiate installs, execute client commands, or alter active runs.
+- The server stores access-code verifiers securely, not plaintext codes. Avoid transmitting codes in event reports.
+- A completed run's reporting is best effort with durable local retry; server outage must not prevent a local setup from finishing.
