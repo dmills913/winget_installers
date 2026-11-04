@@ -76,3 +76,11 @@ tasks:
 - Define script parameters and elevation request format.
 - Decide whether user edits are saved as YAML patches or fully rewritten files.
 - Establish package format for prepared Simple Mode entrypoints.
+
+## Distribution and publishing (confirmed 2026-11-04)
+- YAML is the common portable configuration format for local and server-delivered profiles.
+- Django maintains drafts and explicit published revisions. Only latest published revision is served to new authenticated sessions.
+- Profile access codes are **server metadata**, not embedded in YAML. Multiple codes can point to the same profile.
+- The downloaded package includes YAML and referenced scripts/assets; cryptographic integrity covers the entire executable-content set.
+- Each run snapshots the exact published revision and assets; active runs do not change after a later publication.
+- Inline PowerShell commands and packaged `.ps1` files should both be supported in the final schema. Keep `manual` vs `automatic` execution separate from `optional` selection; exact field names remain to be finalized.
