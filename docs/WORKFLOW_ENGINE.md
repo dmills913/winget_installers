@@ -77,3 +77,15 @@ A skipped prerequisite blocks dependents; it does not count as success.
 
 ## Explicit non-goals for MVP
 Concurrent installers, pre-login background service, full offline caching, credential storage, automatic driver recovery, and unattended bypass of UAC/SmartScreen.
+
+## Remote profile acquisition and reporting contract (2026-11-04)
+1. App launches; recipient enters setup access code.
+2. Server resolves code to profile and returns the latest published version, not a previously downloaded version.
+3. App verifies signed package (including scripts), checks schema compatibility, and stores immutable snapshot before execution.
+4. Recipient reviews/confirms; execution is local. A running session never receives remotely initiated actions or live config mutations.
+5. Resume after restart or interruption uses saved snapshot.
+6. On successful terminal completion, persist outcome locally and submit authenticated, idempotent completion report to server. Server then deactivates code when its policy is `after_success`.
+7. Failure/interruption leaves code active. If reporting is offline, retry later; the server shows pending/last-seen status rather than inventing success.
+8. Revocation prevents future configuration retrieval; it does not retroactively cancel an already snapshotted run.
+
+Additional acceptance tests: new publication after executable download is retrieved at code entry; publication during a run does not change snapshot; duplicate success events deactivate once; forged success is rejected; failed run does not deactivate; offline success retries reporting; revoked code cannot fetch a new config; n8n failure does not affect local completion.
