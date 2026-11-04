@@ -26,3 +26,13 @@ Unit tests for schema, dependency graph, transitions, selection overrides, and r
 
 ## Deferred design
 Precise privilege protocol, storage format, configuration integrity/signing strategy, and Windows Update selection semantics require implementation design before coding.
+
+## Confirmed deployment boundary (2026-11-04)
+- **Windows app:** WPF/.NET, executes all installation actions locally only after the local user initiates setup. Works with local YAML without VPS.
+- **VPS:** Django admin + API manages YAML drafts/published revisions, access credentials, installation session records, and optional n8n notification delivery. No remote execution, control agent, inbound client access, or mid-run command injection.
+- **Single recipient entry point:** website hosts/links the installer; the installed app asks for the access code and retrieves latest published profile over HTTPS. Website may proxy/redirect the executable while retaining a one-download experience.
+- **Trust boundary:** verify signed configuration packages and all referenced scripts. Signing private key remains off the VPS; verification public key ships in trusted application. VPS compromise alone must not allow arbitrary replacement of executable commands in verified packages. An app binary replaced at the download source remains a separate distribution risk.
+- **Snapshot lifecycle:** authenticate -> retrieve latest published config and associated assets -> verify integrity/compatibility -> persist immutable local snapshot -> review/approve -> execute from snapshot -> persist/report outcome. Reboots and restarts resume the same snapshot; never silently fetch changed config into an active run.
+- **Credential lifecycle:** access code points to profile, not directly to immutable YAML. Server authenticates without storing plaintext, creates scoped installation session and accepts authenticated status events. Completion event is idempotent; verified success transitions default access code to inactive/completed. No completion event means no automatic deactivation.
+- **n8n:** optional downstream webhook from authenticated server, not a public webhook embedded in client. Queue/retry events; notifications never block installation.
+- **Admin:** use Django Admin first; custom UI only when needed. Draft/published revision separation and audit log.
